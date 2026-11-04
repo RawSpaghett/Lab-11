@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//"we will allow users to set the start and goal positions dynamically."
+
 public class Pathfinding : MonoBehaviour
 {
     private List<Vector2Int> path = new List<Vector2Int>();
-    private Vector2Int start = new Vector2Int(0, 1);
-    private Vector2Int goal = new Vector2Int(4, 4);
+    [SerializeField] Vector2Int start = new Vector2Int(0, 1);
+    [SerializeField] Vector2Int goal = new Vector2Int(4, 4);
     private Vector2Int next;
     private Vector2Int current;
 
@@ -28,6 +30,13 @@ public class Pathfinding : MonoBehaviour
 
     private void Start()
     {
+        FindPath(start, goal);
+    }
+
+    public void SetNewGoals(Vector2Int Start, Vector2Int Goal) //change at runtime
+    {
+        start = Start;
+        goal = Goal;
         FindPath(start, goal);
     }
 
