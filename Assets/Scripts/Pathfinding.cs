@@ -11,6 +11,18 @@ public class Pathfinding : MonoBehaviour
     private Vector2Int next;
     private Vector2Int current;
 
+    [Header("Dynamic Path Values")]
+    [SerializeField] Vector2Int newStart = new Vector2Int(0, 1);
+    [SerializeField] Vector2Int newGoal = new Vector2Int(4, 4);
+
+    [Header("Dynamic Grid Values")]
+    [SerializeField] int newWidth = 5;
+    [SerializeField] int newHeight = 5;
+    [SerializeField] float obstacleProbabilty = 20;
+
+    [Header("Dynamic Obstacle Values")]
+    [SerializeField] Vector2Int newObstacle = new Vector2Int(4, 3);
+
     private Vector2Int[] directions = new Vector2Int[]
     {
         new Vector2Int(1, 0),
@@ -33,10 +45,53 @@ public class Pathfinding : MonoBehaviour
         FindPath(start, goal);
     }
 
+    [ContextMenu("Set New Path")]
+    public void TestDynamicPath()
+    {
+        SetNewGoals(newStart, newGoal);
+    }
+
+    [ContextMenu("Set New Obstacle")]
+    public void TestDynamicObstacle()
+    {
+        AddObstacle(newObstacle);
+    }
+
+    [ContextMenu("Generate Random Grid")]
+    public void TestDynamicGrid()
+    {
+        GenerateRandomGrid(newWidth, newHeight, obstacleProbabilty);
+    }
+
     public void SetNewGoals(Vector2Int Start, Vector2Int Goal) //change at runtime
     {
+        path.Clear();
         start = Start;
         goal = Goal;
+        FindPath(start, goal);
+    }
+
+    private void GenerateRandomGrid(int width, int height, float obstacleProbability)
+    {
+        path.Clear();
+        grid = new int[height, width];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Vector2Int cell = new Vector2Int(x, y);
+                bool wall = cell != start && cell != goal && Random.Range(0, 100) < obstacleProbability;
+                grid[y, x] = wall ? 1 : 0;
+            }
+        }
+        FindPath(start, goal);
+    }
+
+    private void AddObstacle(Vector2Int position)
+    {
+        if (!IsInBounds(position) || position == start || position == goal) return;
+        path.Clear();
+        grid[position.y, position.x] = 1;
         FindPath(start, goal);
     }
 
