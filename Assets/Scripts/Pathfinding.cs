@@ -23,6 +23,7 @@ public class Pathfinding : MonoBehaviour
     [Header("Dynamic Obstacle Values")]
     [SerializeField] Vector2Int newObstacle = new Vector2Int(4, 3);
 
+    //all possible movement directions
     private Vector2Int[] directions = new Vector2Int[]
     {
         new Vector2Int(1, 0),
@@ -31,6 +32,7 @@ public class Pathfinding : MonoBehaviour
         new Vector2Int(0, -1)
     };
 
+    //represents the grid
     private int[,] grid = new int[,]
     {
         { 0, 1, 0, 0, 0 },
@@ -45,7 +47,7 @@ public class Pathfinding : MonoBehaviour
         FindPath(start, goal);
     }
 
-    [ContextMenu("Set New Path")]
+    [ContextMenu("Set New Path")] //can access this directly in inspector for easy testing
     public void TestDynamicPath()
     {
         SetNewGoals(newStart, newGoal);
@@ -63,7 +65,8 @@ public class Pathfinding : MonoBehaviour
         GenerateRandomGrid(newWidth, newHeight, obstacleProbabilty);
     }
 
-    public void SetNewGoals(Vector2Int Start, Vector2Int Goal) //change at runtime
+
+    public void SetNewGoals(Vector2Int Start, Vector2Int Goal) //change at runtime, updates start and goal positions, then finds a new path
     {
         path.Clear();
         start = Start;
@@ -71,13 +74,14 @@ public class Pathfinding : MonoBehaviour
         FindPath(start, goal);
     }
 
+    //creates a new grid
     private void GenerateRandomGrid(int width, int height, float obstacleProbability)
     {
         path.Clear();
         grid = new int[height, width];
         for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < width; x++) //loop through every part of 2d array and colors it
             {
                 Vector2Int cell = new Vector2Int(x, y);
                 bool wall = cell != start && cell != goal && Random.Range(0, 100) < obstacleProbability;
@@ -86,7 +90,7 @@ public class Pathfinding : MonoBehaviour
         }
         FindPath(start, goal);
     }
-
+    //finds random spots to create obstacles
     private void AddObstacle(Vector2Int position)
     {
         if (!IsInBounds(position) || position == start || position == goal) return;
@@ -130,7 +134,7 @@ public class Pathfinding : MonoBehaviour
     {
         return point.x >= 0 && point.x < grid.GetLength(1) && point.y >= 0 && point.y < grid.GetLength(0);
     }
-
+    //bfs to find the shortest path
     private void FindPath(Vector2Int start, Vector2Int goal)
     {
         Queue<Vector2Int> frontier = new Queue<Vector2Int>();
